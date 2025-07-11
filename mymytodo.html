@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Todo App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        .nav {
+            margin-bottom: 20px;
+        }
+
+        .nav button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin-right: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .nav button:hover {
+            background-color: #0056b3;
+        }
+
+        .nav button.active {
+            background-color: #28a745;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .todo-input {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .todo-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+        }
+
+        .todo-input button {
+            border-radius: 0 4px 4px 0;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border: 1px solid #e9ecef;
+        }
+
+        .todo-item.completed {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .todo-item input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .todo-text {
+            flex: 1;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .success {
+            color: green;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .user-info {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .about-content {
+            line-height: 1.5;
+        }
+
+        .about-content h2 {
+            color: #007bff;
+            margin-top: 20px;
+        }
+
+        /* Some CSS mistakes/inconsistencies */
+        .todo-item:hover {
+            background-color: #e9ecef;
+        }
+
+        .nav button.logout {
+            float: right;
+            background-color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>My Awesome Todo App</h1>
+        
+        <!-- Navigation -->
+        <div class="nav" id="navigation" style="display: none;">
+            <button class="active" onclick="showSection('todo')">My Tasks</button>
+            <button onclick="showSection('about')">About</button>
+            <button class="logout" onclick="logout()">Logout</button>
+        </div>
+
+        <!-- Login Section -->
+        <div class="section active" id="login">
+            <h2>Login to Your Account</h2>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="loginEmail" placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password">
+            </div>
+            <button class="btn" onclick="doLogin()">Login</button>
+            <button class="btn btn-success" onclick="showRegister()" style="margin-left: 10px;">Register</button>
+            <div id="loginError" class="error"></div>
+        </div>
+
+        <!-- Register Section -->
+        <div class="section" id="register">
+            <h2>Create New Account</h2>
+            <div class="form-group">
+                <label>Name:</label>
+                <input type="text" id="regName" placeholder="Your full name">
+            </div>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="regEmail" placeholder="Your email address">
+            </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" id="regPassword" placeholder="Choose a password">
+            </div>
+            <button class="btn btn-success" onclick="doRegister()">Create Account</button>
+            <button class="btn" onclick="showLogin()" style="margin-left: 10px;">Back to Login</button>
+            <div id="registerError" class="error"></div>
+            <div id="registerSuccess" class="success"></div>
+        </div>
+
+        <!-- Todo Section -->
+        <div class="section" id="todo">
+            <div class="user-info">
+                <strong>Welcome, <span id="currentUser"></span>!</strong>
+                <span style="float: right;">Tasks: <span id="taskCount">0</span></span>
+            </div>
+            
+            <div class="todo-input">
+                <input type="text" id="newTask" placeholder="What do you need to do?">
+                <button class="btn btn-success" onclick="addNewTask()">Add Task</button>
+            </div>
+            
+            <div id="taskList">
+                <!-- Tasks will appear here -->
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <div class="section" id="about">
+            <div class="about-content">
+                <h2>About This App</h2>
+                <p>This is my todo list application that I built for my web development class. It's pretty cool and helps me organize my homework and stuff.</p>
+                
+                <h2>Features</h2>
+                <ul>
+                    <li>Add and delete tasks</li>
+                    <li>Mark tasks as complete</li>
+                    <li>User login system</li>
+                    <li>Nice looking interface</li>
+                    <li>Works on mobile too (I think)</li>
+                </ul>
+                
+                <h2>Technologies Used</h2>
+                <p>I used HTML, CSS, and JavaScript to build this. It was pretty challenging but I'm happy with how it turned out!</p>
+                
+                <h2>Future Improvements</h2>
+                <p>I want to add more features like:</p>
+                <ul>
+                    <li>Task categories</li>
+                    <li>Due dates</li>
+                    <li>Better styling</li>
+                    <li>Save data to a database</li>
+                </ul>
+                
+                <p><em>Created by: Student Name - CS 101 Final Project</em></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        var users = [];
+        var currentUser = null;
+        var tasks = [];
+        var taskIdCounter = 1;
+
+        // Show different sections
+        function showSection(sectionName) {
+            var sections = document.querySelectorAll('.section');
+            for (var i = 0; i < sections.length; i++) {
+                sections[i].classList.remove('active');
+            }
+            
+            var navButtons = document.querySelectorAll('.nav button');
+            for (var i = 0; i < navButtons.length; i++) {
+                navButtons[i].classList.remove('active');
+            }
+            
+            document.getElementById(sectionName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function showLogin() {
+            document.getElementById('register').classList.remove('active');
+            document.getElementById('login').classList.add('active');
+        }
+
+        function showRegister() {
+            document.getElementById('login').classList.remove('active');
+            document.getElementById('register').classList.add('active');
+        }
+
+        // Registration function
+        function doRegister() {
+            var name = document.getElementById('regName').value;
+            var email = document.getElementById('regEmail').value;
+            var password = document.getElementById('regPassword').value;
+            
+            // Basic validation
+            if (name == '' || email == '' || password == '') {
+                document.getElementById('registerError').innerHTML = 'Please fill in all fields!';
+                return;
+            }
+            
+            // Check if user already exists
+            for (var i = 0; i < users.length; i++) {
+                if (users[i].email == email) {
+                    document.getElementById('registerError').innerHTML = 'Email already exists!';
+                    return;
+                }
+            }
+            
+            // Create new user
+            var newUser = {
+                name: name,
+                email: email,
+                password: password
+            };
+            
+            users.push(newUser);
+            
+            document.getElementById('registerSuccess').innerHTML = 'Account created successfully!';
+            document.getElementById('registerError').innerHTML = '';
+            
+            // Clear form
+            document.getElementById('regName').value = '';
+            document.getElementById('regEmail').value = '';
+            document.getElementById('regPassword').value = '';
+            
+            // Auto switch to login after 2 seconds
+            setTimeout(function() {
+                showLogin();
+                document.getElementById('registerSuccess').innerHTML = '';
+            }, 2000);
+        }
+
+        // Login function
+        function doLogin() {
+            var email = document.getElementById('loginEmail').value;
+            var password = document.getElementById('loginPassword').value;
+            
+            if (email == '' || password == '') {
+                document.getElementById('loginError').innerHTML = 'Please enter email and password!';
+                return;
+            }
+            
+            // Find user
+            var foundUser = null;
+            for (var i = 0; i < users.length; i++) {
+                if (users[i].email == email && users[i].password == password) {
+                    foundUser = users[i];
+                    break;
+                }
+            }
+            
+            if (foundUser == null) {
+                document.getElementById('loginError').innerHTML = 'Invalid email or password!';
+                return;
+            }
+            
+            // Login successful
+            currentUser = foundUser;
+            document.getElementById('currentUser').innerHTML = currentUser.name;
+            document.getElementById('navigation').style.display = 'block';
+            document.getElementById('login').classList.remove('active');
+            document.getElementById('todo').classList.add('active');
+            
+            loadUserTasks();
+        }
+
+        // Logout function
+        function logout() {
+            currentUser = null;
+            tasks = [];
+            document.getElementById('navigation').style.display = 'none';
+            document.getElementById('todo').classList.remove('active');
+            document.getElementById('login').classList.add('active');
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginError').innerHTML = '';
+            document.getElementById('taskList').innerHTML = '';
+        }
+
+        // Add new task
+        function addNewTask() {
+            var taskText = document.getElementById('newTask').value;
+            
+            if (taskText.trim() == '') {
+                alert('Please enter a task!');
+                return;
+            }
+            
+            var task = {
+                id: taskIdCounter++,
+                text: taskText,
+                completed: false,
+                userId: currentUser.email
+            };
+            
+            tasks.push(task);
+            document.getElementById('newTask').value = '';
+            
+            renderTasks();
+            updateTaskCount();
+        }
+
+        // Toggle task completion
+        function toggleTask(taskId) {
+            for (var i = 0; i < tasks.length; i++) {
+                if (tasks[i].id == taskId) {
+                    tasks[i].completed = !tasks[i].completed;
+                    break;
+                }
+            }
+            renderTasks();
+            updateTaskCount();
+        }
+
+        // Delete task
+        function deleteTask(taskId) {
+            var newTasks = [];
+            for (var i = 0; i < tasks.length; i++) {
+                if (tasks[i].id != taskId) {
+                    newTasks.push(tasks[i]);
+                }
+            }
+            tasks = newTasks;
+            renderTasks();
+            updateTaskCount();
+        }
+
+        // Render tasks
+        function renderTasks() {
+            var taskList = document.getElementById('taskList');
+            taskList.innerHTML = '';
+            
+            for (var i = 0; i < tasks.length; i++) {
+                var task = tasks[i];
+                if (task.userId == currentUser.email) {
+                    var taskDiv = document.createElement('div');
+                    taskDiv.className = 'todo-item';
+                    if (task.completed) {
+                        taskDiv.className += ' completed';
+                    }
+                    
+                    taskDiv.innerHTML = '<input type="checkbox" ' + (task.completed ? 'checked' : '') + ' onchange="toggleTask(' + task.id + ')"> ' +
+                                       '<span class="todo-text">' + task.text + '</span> ' +
+                                       '<button class="delete-btn" onclick="deleteTask(' + task.id + ')">Delete</button>';
+                    
+                    taskList.appendChild(taskDiv);
+                }
+            }
+        }
+
+        // Update task count
+        function updateTaskCount() {
+            var count = 0;
+            for (var i = 0; i < tasks.length; i++) {
+                if (tasks[i].userId == currentUser.email) {
+                    count++;
+                }
+            }
+            document.getElementById('taskCount').innerHTML = count;
+        }
+
+        // Load user tasks
+        function loadUserTasks() {
+            renderTasks();
+            updateTaskCount();
+        }
+
+        // Some keyboard shortcuts
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                if (document.activeElement.id === 'newTask') {
+                    addNewTask();
+                } else if (document.activeElement.id === 'loginPassword') {
+                    doLogin();
+                } else if (document.activeElement.id === 'regPassword') {
+                    doRegister();
+                }
+            }
+        });
+
+        // Demo data for testing
+        users.push({
+            name: 'Test User',
+            email: 'test@test.com',
+            password: '123'
+        });
+    </script>
+</body>
+</html>

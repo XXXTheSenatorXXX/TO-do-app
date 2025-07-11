@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskMaster - Todo App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-link {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #667eea;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-top: 10px;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .input-section input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .add-btn {
+            padding: 12px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            transition: all 0.3s;
+        }
+
+        .todo-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .todo-item.completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+            border-left-color: #ccc;
+        }
+
+        .todo-text {
+            flex: 1;
+            margin-left: 10px;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .about-content {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .about-content h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .about-content p {
+            margin-bottom: 15px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .feature-list li:before {
+            content: "✓";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .error {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .success {
+            color: #28a745;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <div class="nav-bar" id="navBar" style="display: none;">
+            <div class="logo">TaskMaster</div>
+            <div class="nav-links">
+                <button class="nav-link active" onclick="showPage('todo')">Tasks</button>
+                <button class="nav-link" onclick="showPage('about')">About</button>
+                <button class="nav-link" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- Login Page -->
+        <div class="page active" id="loginPage">
+            <div class="logo" style="text-align: center; margin-bottom: 30px; font-size: 28px;">TaskMaster</div>
+            <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Welcome Back!</h2>
+            
+            <div class="form-group">
+                <label for="loginEmail">Email:</label>
+                <input type="email" id="loginEmail" placeholder="Enter your email">
+            </div>
+            
+            <div class="form-group">
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password">
+            </div>
+            
+            <button class="btn" onclick="login()">Login</button>
+            <button class="btn btn-secondary" onclick="showRegister()">Don't have an account? Register</button>
+            
+            <div id="loginError" class="error" style="display: none;"></div>
+        </div>
+
+        <!-- Register Page -->
+        <div class="page" id="registerPage">
+            <div class="logo" style="text-align: center; margin-bottom: 30px; font-size: 28px;">TaskMaster</div>
+            <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Create Account</h2>
+            
+            <div class="form-group">
+                <label for="registerName">Full Name:</label>
+                <input type="text" id="registerName" placeholder="Enter your full name">
+            </div>
+            
+            <div class="form-group">
+                <label for="registerEmail">Email:</label>
+                <input type="email" id="registerEmail" placeholder="Enter your email">
+            </div>
+            
+            <div class="form-group">
+                <label for="registerPassword">Password:</label>
+                <input type="password" id="registerPassword" placeholder="Create a password">
+            </div>
+            
+            <button class="btn" onclick="register()">Register</button>
+            <button class="btn btn-secondary" onclick="showLogin()">Already have an account? Login</button>
+            
+            <div id="registerError" class="error" style="display: none;"></div>
+            <div id="registerSuccess" class="success" style="display: none;"></div>
+        </div>
+
+        <!-- Todo Page -->
+        <div class="page" id="todoPage">
+            <div class="user-info">
+                <span>Welcome, <strong id="userName"></strong>!</span>
+                <span id="taskCount">0 tasks</span>
+            </div>
+            
+            <div class="input-section">
+                <input type="text" id="taskInput" placeholder="Add a new task...">
+                <button class="add-btn" onclick="addTask()">Add Task</button>
+            </div>
+            
+            <div id="todoList"></div>
+        </div>
+
+        <!-- About Page -->
+        <div class="page" id="aboutPage">
+            <div class="about-content">
+                <h2>About TaskMaster</h2>
+                <p>TaskMaster is a simple yet powerful todo application designed to help you organize your daily tasks efficiently. Built with modern web technologies, it provides a clean and intuitive interface for managing your productivity.</p>
+                
+                <h2>Features</h2>
+                <ul class="feature-list">
+                    <li>User authentication system</li>
+                    <li>Add, complete, and delete tasks</li>
+                    <li>Task counter and progress tracking</li>
+                    <li>Clean, responsive design</li>
+                    <li>Secure user data management</li>
+                </ul>
+                
+                <h2>How to Use</h2>
+                <p>1. Create an account or login with existing credentials</p>
+                <p>2. Add tasks using the input field</p>
+                <p>3. Mark tasks as complete by checking the checkbox</p>
+                <p>4. Delete tasks when no longer needed</p>
+                
+                <h2>Version</h2>
+                <p>TaskMaster v1.0 - Built with HTML, CSS, and JavaScript</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // In-memory storage for demo purposes
+        let users = [];
+        let currentUser = null;
+        let tasks = [];
+
+        // Navigation functions
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            document.getElementById(pageId + 'Page').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function showLogin() {
+            document.getElementById('registerPage').classList.remove('active');
+            document.getElementById('loginPage').classList.add('active');
+        }
+
+        function showRegister() {
+            document.getElementById('loginPage').classList.remove('active');
+            document.getElementById('registerPage').classList.add('active');
+        }
+
+        // Authentication functions
+        function register() {
+            const name = document.getElementById('registerName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value.trim();
+            
+            const errorDiv = document.getElementById('registerError');
+            const successDiv = document.getElementById('registerSuccess');
+            
+            if (!name || !email || !password) {
+                errorDiv.textContent = 'Please fill in all fields';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                return;
+            }
+            
+            if (users.find(user => user.email === email)) {
+                errorDiv.textContent = 'Email already exists';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                return;
+            }
+            
+            users.push({ name, email, password });
+            errorDiv.style.display = 'none';
+            successDiv.textContent = 'Account created successfully! Please login.';
+            successDiv.style.display = 'block';
+            
+            // Clear form
+            document.getElementById('registerName').value = '';
+            document.getElementById('registerEmail').value = '';
+            document.getElementById('registerPassword').value = '';
+            
+            setTimeout(() => {
+                showLogin();
+                successDiv.style.display = 'none';
+            }, 2000);
+        }
+
+        function login() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            
+            const errorDiv = document.getElementById('loginError');
+            
+            if (!email || !password) {
+                errorDiv.textContent = 'Please enter both email and password';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (!user) {
+                errorDiv.textContent = 'Invalid email or password';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            currentUser = user;
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('navBar').style.display = 'flex';
+            document.getElementById('loginPage').classList.remove('active');
+            document.getElementById('todoPage').classList.add('active');
+            
+            loadTasks();
+        }
+
+        function logout() {
+            currentUser = null;
+            tasks = [];
+            document.getElementById('navBar').style.display = 'none';
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById('loginPage').classList.add('active');
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('todoList').innerHTML = '';
+        }
+
+        // Todo functions
+        function addTask() {
+            const taskInput = document.getElementById('taskInput');
+            const taskText = taskInput.value.trim();
+            
+            if (taskText === '') {
+                alert('Please enter a task!');
+                return;
+            }
+            
+            const task = {
+                id: Date.now(),
+                text: taskText,
+                completed: false,
+                userId: currentUser.email
+            };
+            
+            tasks.push(task);
+            renderTasks();
+            taskInput.value = '';
+            updateTaskCount();
+        }
+
+        function toggleTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.completed = !task.completed;
+                renderTasks();
+                updateTaskCount();
+            }
+        }
+
+        function deleteTask(taskId) {
+            tasks = tasks.filter(t => t.id !== taskId);
+            renderTasks();
+            updateTaskCount();
+        }
+
+        function renderTasks() {
+            const todoList = document.getElementById('todoList');
+            const userTasks = tasks.filter(t => t.userId === currentUser.email);
+            
+            todoList.innerHTML = '';
+            
+            userTasks.forEach(task => {
+                const todoItem = document.createElement('div');
+                todoItem.className = `todo-item ${task.completed ? 'completed' : ''}`;
+                
+                todoItem.innerHTML = `
+                    <input type="checkbox" class="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id})">
+                    <span class="todo-text">${task.text}</span>
+                    <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
+                `;
+                
+                todoList.appendChild(todoItem);
+            });
+        }
+
+        function updateTaskCount() {
+            const userTasks = tasks.filter(t => t.userId === currentUser.email);
+            const completedTasks = userTasks.filter(t => t.completed).length;
+            document.getElementById('taskCount').textContent = `${userTasks.length} tasks (${completedTasks} completed)`;
+        }
+
+        function loadTasks() {
+            renderTasks();
+            updateTaskCount();
+        }
+
+        // Enter key support
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const activeElement = document.activeElement;
+                if (activeElement.id === 'taskInput') {
+                    addTask();
+                } else if (activeElement.id === 'loginPassword') {
+                    login();
+                } else if (activeElement.id === 'registerPassword') {
+                    register();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

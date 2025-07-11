@@ -1,0 +1,59 @@
+<!-- src/main/resources/templates/about.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>About</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9fafc;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #333;
+    }
+    h1 {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+    p {
+      max-width: 700px;
+      line-height: 1.6;
+      font-size: 16px;
+      color: #555;
+      text-align: center;
+    }
+    a {
+      margin-top: 30px;
+      text-decoration: none;
+      color: #007bff;
+      font-weight: 600;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+<h1>About This To-Do App</h1>
+<p>
+  This is a simple, user-friendly To-Do List application built using Spring Boot and Thymeleaf.
+  It allows users to add, track, and manage their daily tasks in a clean interface.
+</p>
+<p>
+  Features include:
+<ul>
+  <li>Task creation and completion tracking</li>
+  <li>Per-user to-do management</li>
+  <li>Responsive and clean UI</li>
+</ul>
+</p>
+<a th:href="@{/todos}">← Back to To-Do List</a>
+
+</body>
+</html>

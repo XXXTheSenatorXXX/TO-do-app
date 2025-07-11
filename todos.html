@@ -1,0 +1,106 @@
+<!-- src/main/resources/templates/todos.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Your To-Do List</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9fafc;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #333;
+    }
+    h2 {
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #2c3e50;
+    }
+    h3 {
+      margin-top: 30px;
+      margin-bottom: 15px;
+      font-weight: 600;
+      color: #34495e;
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+      width: 320px;
+      max-width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background-color: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    ul li {
+      padding: 12px 18px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 16px;
+    }
+    ul li:last-child {
+      border-bottom: none;
+    }
+    ul li span:first-child {
+      flex-grow: 1;
+    }
+    form {
+      margin-top: 20px;
+      width: 320px;
+      max-width: 100%;
+      display: flex;
+      gap: 10px;
+    }
+    input[type="text"] {
+      flex-grow: 1;
+      padding: 10px 14px;
+      border: 1.8px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+    input[type="text"]:focus {
+      border-color: #2980b9;
+      outline: none;
+    }
+    button {
+      padding: 10px 16px;
+      background-color: #2980b9;
+      color: white;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #1c5980;
+    }
+  </style>
+</head>
+<body>
+<h2>Welcome, <span th:text="${user.username}">User</span></h2>
+<a th:href="@{/about}">About</a>
+
+<h3>Your To-Do List</h3>
+<ul>
+  <li th:each="todo : ${todos}">
+    <span th:text="${todo.title}"></span>
+    <span th:text="${todo.completed ? '✅' : '❌'}"></span>
+  </li>
+</ul>
+
+<h3>Add a new To-Do</h3>
+<form th:action="@{/todos/{userId}(userId=${user.id})}" method="post">
+  <input type="text" name="title" placeholder="Enter task" required/>
+  <button type="submit">Add</button>
+</form>
+
+</body>
+</html>
+
